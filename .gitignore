@@ -1,0 +1,5 @@
+out
+.idea
+.gradle
+WebRTC-Documentation-*
+node_modules

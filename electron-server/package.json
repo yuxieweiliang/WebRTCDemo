@@ -1,0 +1,11 @@
+{
+  "name": "websocket-electron",
+  "version": "1.0.0",
+  "description": "A simple WebSocket-based chat server.",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "websocket": "^1.0.29"
+  }
+}
