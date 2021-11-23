@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script src="./socketEvent.js"></script>
+<script src="./Socket.js"></script>
+<script src="./PeerConnectionFactory.js"></script>
+<script>
+  const socket = new createSocket(window.location.hostname, 6502);
+  const connect = new PeerConnectionFactory([
+    {
+      urls: "turn:" + "localhost",
+      username: "webrtc",
+      credential: "turnserver"
+    },
+    {
+      urls: "turn:" + "192.168.1.12",
+      username: "webrtc",
+      credential: "turnserver"
+    }
+  ], socket);
+
+  console.log(connect);
+  console.log(connect.getConfiguration());
+  console.log(connect.getTransceivers());
+  console.log(connect.getSenders());
+</script>
+</body>
+</html>

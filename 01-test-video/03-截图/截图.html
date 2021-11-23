@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas to Image</title>
+</head>
+
+<body>
+<canvas id="canvas" width="640" height="360"></canvas>
+<video id="video" autoplay loop muted>
+  <source src="../media/video.mp4"/>
+</video>
+<button id="button-start">屏幕截图</button>
+</body>
+
+<script src="../js/canvas2image.js"></script>
+
+<style>
+  * {
+    margin: 5px;
+    font-size: 0px;
+    box-sizing: border-box;
+  }
+
+  #video {
+    width: 640px;
+    height: 360px;
+    background: deepskyblue;
+    display: block;
+    border-radius: 2px;
+    box-shadow: 0 1px 1.5px 1px rgba(0, 0, 0, 0.12);
+  }
+
+  #button-start {
+    width: 640px;
+    height: 75px;
+    box-sizing: border-box;
+    background: linear-gradient(#FF000011, #FF000044) orange;
+    color: white;
+    font-size: 16px;
+    font-family: "monospace";
+    border: none;
+    outline: none;
+    border-radius: 2px;
+    box-shadow: 0 1px 1.5px 1px rgba(0, 0, 0, 0.12);
+    user-select: none;
+  }
+
+  #button-start:hover {
+    background: linear-gradient(#FF000033, #FF000077) orange;
+  }
+
+  #button-start:active {
+    background: linear-gradient(#FF000055, #FF000099) orange;
+  }
+</style>
+
+<script>
+
+  let canvasElement = document.querySelector("#canvas");
+  let videoElement = document.querySelector("#video");
+  let startButton = document.querySelector("#button-start");
+
+  const videoWidth = 640;
+  const videoHeight = 360;
+
+  let frameId = null;
+
+  //设置画布背景
+  const canvasContext = canvasElement.getContext("2d");
+  canvasContext.fillStyle = "deepskyblue";
+  canvasContext.fillRect(0, 0, canvasElement.width, canvasElement.height);
+
+  //按钮事件
+  startButton.onclick = e => {
+    download();
+  };
+
+  //将video标签绘制到canvas上面
+  drawFrame();
+
+  //播放视频
+  function drawFrame() {
+    canvasContext.drawImage(videoElement, 0, 0, videoWidth, videoHeight);
+    frameId = requestAnimationFrame(drawFrame);
+  }
+
+  //下载录制内容
+  function download() {
+    let link = document.createElement("a");
+    link.href = Canvas2Image.saveAsPNG(canvasElement, true).src;
+    link.download = new Date().getTime() + ".png";
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+</script>
+</html>
+

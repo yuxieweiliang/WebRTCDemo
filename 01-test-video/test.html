@@ -1,0 +1,162 @@
+<template>
+  <div>
+    <h1>HTML Element Recording using RecordRTC</h1>
+
+    <br />
+
+    <button id="btn-start-recording" @click="start" :disabled="adisabled">
+      Start Recording
+    </button>
+    <button id="btn-stop-recording" @click="stop" :disabled="bdisabled">
+      Stop Recording
+    </button>
+
+    <hr />
+    <div style="display: none">
+      <video controls autoplay playsinline id="preview-video"></video>
+    </div>
+    <div
+        id="element-to-record"
+        style="
+        border: 5px solid gray;
+        border-radius: 5px;
+        padding: 20px;
+        margin: 20px;
+        width: 480px;
+        height: 360px;
+      "
+    >
+      <!-- <video
+        id="video"
+        src="../assets/video/oceans.mp4"
+        style="height: 200px"
+        autoplay
+        muted
+      ></video> -->
+      <videoPlayer
+          id="videoPlayer"
+          ref="videoPlayer"
+          :src="videoSrc"
+      ></videoPlayer>
+    </div>
+
+    <canvas
+        id="background-canvas"
+        width="500"
+        height="300"
+        style="position: absolute; top: -99999999px; left: -9999999999px"
+    ></canvas>
+    <footer style="margin-top: 120px"><small id="send-message"></small></footer>
+  </div>
+</template>
+
+<script>
+
+  import RecordRTC from "recordrtc";
+  import videoSrc from "@/assets/video/oceans.mp4";
+  export default {
+    components: {
+      videoPlayer: () => import("./videoPlayer/index"),
+    },
+    data() {
+      return {
+        videoSrc,
+        video: null,
+        videoStart: false,
+        canvas2d: null,
+        context: null,
+        recorder: null,
+        isRecordingStarted: false,
+        elementToRecord: "",
+        interval: "",
+        adisabled: false,
+        bdisabled: true,
+        requestId: "",
+      };
+    },
+    created() {
+    },
+    mounted() {
+      this.elementToRecord = document.getElementById("element-to-record");
+      var counter = document.getElementById("counter");
+      this.canvas2d = document.getElementById("background-canvas");
+      this.context = this.canvas2d.getContext("2d");
+      let w = window.innerWidth;
+      let h = (window.innerWidth / 16) * 9;
+      this.canvas2d.width = w;
+      this.canvas2d.height = h;
+    },
+    computed: {
+      playerRef() {
+        return this.$refs.videoPlayer.$refs.videoPlayer.$refs.video;
+      },
+    },
+    methods: {
+
+      looper() {
+        let that = this;
+        if (!this.isRecordingStarted) {
+          return setTimeout(this.looper, 500);
+        }
+        that.context.clearRect(0, 0, that.canvas2d.width, that.canvas2d.height);
+        that.context.drawImage(
+          that.playerRef,
+          0,
+          0,
+          that.canvas2d.width,
+          that.canvas2d.height
+        );
+        that.context.drawImage(
+          that.playerRef,
+          0,
+          0,
+          that.canvas2d.width,
+          that.canvas2d.height
+        );
+        if (that.isStoppedRecording) {
+          return;
+        }
+        requestAnimationFrame(that.looper);
+      },
+      start() {
+        console.log(this.playerRef);
+        this.isStoppedRecording = false;
+        this.isRecordingStarted = true;
+
+        this.recorder = RecordRTC(this.canvas2d, {
+          type: "canvas",
+        });
+        this.recorder.startRecording();
+        this.adisabled = true;
+        this.bdisabled = false;
+        document.getElementById("btn-stop-recording").disabled = false;
+        this.looper();
+      },
+      stop() {
+        let _this = this;
+        this.recorder.stopRecording(function () {
+          _this.isRecordingStarted = false;
+          _this.isStoppedRecording = true;
+
+          _this.bdisabled = true;
+          _this.adisabled = true;
+          var blob = _this.recorder.getBlob();
+          document.getElementById("preview-video").src = URL.createObjectURL(
+            blob
+          );
+          document.getElementById("preview-video").parentNode.style.display = "block";
+          _this.elementToRecord.style.display = "none";
+
+          // window.open(URL.createObjectURL(blob));
+        });
+      },
+    },
+  };
+</script>
+<style scoped>
+  video {
+    width: auto;
+    max-width: 100%;
+  }
+</style>
+
