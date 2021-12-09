@@ -1,0 +1,27 @@
+{
+  "name": "WebRTC-Example-RTCDataChannel",
+  "version": "1.0.0",
+  "description": "An 'as simple as it gets' WebRTC example.",
+  "main": "main.js",
+  "scripts": {
+    "start": "nodemon server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zcduthie/WebRTC-Example-RTCDataChannel.git"
+  },
+  "keywords": [
+    "webrtc"
+  ],
+  "author": "shane tully",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zcduthie/WebRTC-Example-RTCDataChannel/issues"
+  },
+  "homepage": "https://github.com/zcduthie/WebRTC-Example-RTCDataChannel#readme",
+  "dependencies": {
+    "ws": "^3.3.2",
+    "express": "^4.16.4"
+  }
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <title>WebRTC: Simple RTCDataChannel sample</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="main.css" type="text/css" media="all">
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+</head>
+<body onload="startup();">
+  <h1>WebRTC: Simple RTCDataChannel sample</h1>
+  <p>This sample is a simple example of how to use an <code>RTCDataChannel</code> to
+  exchange data between two pages. It is taken from Shane Tully's 'as simple as it gets' WebRTC Example,
+  and combined with Mozilla's Simple RTCDataChannel sample.</p>
+
+  <div class="controlbox">
+    <button id="connectButton" name="connectButton" class="buttonleft">
+      Connect
+    </button>
+    <button id="disconnectButton" name="disconnectButton" class="buttonright" disabled>
+      Disconnect
+    </button>
+  </div>
+  <video width="500" controls  id="video_here"></video>
+  <div class="messagebox">
+    <label for="message">Enter a message:
+      <input type="file" name="message" id="message" placeholder="Message text"
+              inputmode="latin" size=60 maxlength=120>
+    </label>
+    <button id="sendButton" name="sendButton" class="buttonright">
+      Send
+    </button>
+  </div>
+  <div class="messagebox" id="receivebox">
+    <p>Messages received:</p>
+  </div>
+
+  <video id="rightVideo" playsinline controls muted autoplay style="width: 300px; height: 200px;"></video>
+</body>
+<script src="main.js"></script>
+</html>

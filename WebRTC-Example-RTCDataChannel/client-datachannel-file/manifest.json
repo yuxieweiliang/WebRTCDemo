@@ -1,0 +1,5 @@
+{
+  "name": "zcduthie WebRTC Simple RTCDataChannel sample",
+  "docsUrl": "https://github.com/zcduthie/WebRTC-Example-RTCDataChannel",
+  "description": "A simple example that combines Shane Tully's 'as simple as it gets' WebRTC example, and Mozilla's Simple RTCDataChannel sample."
+}
