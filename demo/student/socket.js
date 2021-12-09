@@ -7,7 +7,7 @@ var targetUsername = null;      // To store username of other peer
 var myPeerConnection = null;    // RTCPeerConnection
 var hasAddTrack = false;
 const mediaConstraints = {
-  audio:  false,
+  audio:  true,
   video:  true
 };
 

@@ -106,7 +106,7 @@ function createPeerConnection() {
 
 function handleTrackEvent(event) {
   const video = document.getElementById("received_video");
-  log("*** Track event -----------------------------------------");
+  log("*** Track event -----------------------------------------", event.streams[0]);
   console.log(event);
   video.srcObject = event.streams[0];
   video.play();

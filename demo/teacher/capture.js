@@ -6,7 +6,7 @@
   var username = 'student';
 
   var mediaConstraints = {
-    audio: false,            // We want an audio track
+    audio: true,            // We want an audio track
     video: true             // ...and we want a video track
   };
 
