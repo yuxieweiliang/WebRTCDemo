@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<video id="output" width="320" height="240" autoplay></video>
+<script>
+  function sockets(buffer) {
+    const socket = new WebSocket('wss://localhost:5002/ws')
+
+    socket.onmessage = async function (event) {
+      // event.data is a blob
+      buffer.appendBuffer(new Uint8Array(event.data))
+    }
+  }
+
+  let ms = new MediaSource()
+  let output = document.getElementById('output')
+  output.src = URL.createObjectURL(ms)
+  ms.onsourceopen = () => {
+    let buffer = ms.addSourceBuffer('video/webm; codecs="vorbis,vp8"')
+    sockets(buffer)
+  }
+</script>
+<script>
+  function sockets(buffer) {
+    const socket = new WebSocket('wss://localhost:5002/ws')
+
+    socket.onmessage = async function (event) {
+      // event.data is a blob
+      buffer.appendBuffer(new Uint8Array(event.data))
+    }
+  }
+
+  let ms = new MediaSource()
+  let output = document.getElementById('output')
+  output.src = URL.createObjectURL(ms)
+  ms.onsourceopen = () => {
+    let buffer = ms.addSourceBuffer('video/webm; codecs="vorbis,vp8"')
+    sockets(buffer)
+  }
+</script>
+<script>
+
+  async function testVideo() {
+    let options = { mimeType: 'video/webm;codecs=vp8' }
+    let stream = await navigator.mediaDevices.getUserMedia({ video: true })
+    mediaRecorder = new MediaRecorder(stream, options)
+    mediaRecorder.ondataavailable = event => {
+      if (event.data && event.data.size > 0) {
+        send(event.data)
+      }
+    }
+  }
+
+</script>
+</body>
+</html>

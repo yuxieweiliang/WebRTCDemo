@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script>
+  var buffer = new ArrayBuffer(12);
+  var dataView = new DataView(buffer);
+  dataView.setInt8(0, 0x12);
+  dataView.setInt8(1, 0x34);
+  dataView.setInt8(2, 0x56);
+  console.log(dataView, dataView.byteLength);
+  console.log(dataView.getInt32(0).toString(16));
+  console.log(dataView.getInt8(0).toString(16));
+  var dataView = new DataView(buffer.slice(0));
+  console.log(dataView.getInt32(0).toString(16));
+  console.log(dataView.getInt8(0).toString(16));
+
+  var payload = new Uint8Array(buffer, 5);
+  console.log(payload.slice(payload.byteLength) );
+</script>
+</body>
+</html>

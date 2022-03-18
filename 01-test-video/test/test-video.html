@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>hs-demo</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <style>
+    .el-main {
+      display: flex;
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .video-box {
+      width: 400px;
+      height: 500px;
+      border-radius: 4px;
+      border: 1px solid gray;
+      margin-bottom: 20px;
+    }
+    .video-main {
+      width: 100%;
+    }
+    .video-info {
+      padding: 5px;
+    }
+    .el-input {margin-bottom: 5px}
+    .video-btn .el-button {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+
+<body>
+<div id="app">
+  <el-button style="margin: 20px 0 0 20px;" @click="addPlayer">Add+</el-button>
+  <el-main>
+    <div v-for="(item, index) in videoList" class="video-box">
+      <div class="video-main">
+        <video width="100%" height="330px" controls autoplay :id="item.el"></video>
+      </div>
+      <div class="video-info">
+        <el-input placeholder="输入视频地址" v-model="item.assetURL">
+          <template slot="prepend">视频地址</template>
+        </el-input>
+        <div class="video-btn">
+          <el-button v-show="!item.isPlaying" :loading="item.videoLoading" @click="wsInit(item)">play</el-button>
+          <el-button v-show="item.isPlaying" @click="wsDestroy(item)">destory</el-button>
+          <el-button @click="wsRemove(index)">remove</el-button>
+        </div>
+      </div>
+    </div>
+  </el-main>
+</div>
+
+<script src="./vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      videoList: [],
+      loading: null,
+    },
+    mounted() {
+      this.addPlayer();
+    },
+    methods: {
+      addPlayer() {
+        let obj = {
+          el: `video${Math.random().toString().slice(2,9)}`, // 播放器dom
+          // assetURL: 'ws://10.116.64.179:20185/real/sub/2fa2f2d8cc6be4d02f92994a5933674f/4325031985_581.mp4',
+          assetURL: 'ws://192.168.1.70:8081/jessica/34020000001420000123/34020000001320000001',
+          seq: 1,
+          mimeCodec: 'video/mp4; codecs="avc1.64002A"',
+          mediaSource: null,
+          sourceBuffer: null,
+          isPlaying: false,
+          isReady: true,
+          queue: [],
+          ws: null,
+          videoLoading: false
+        }
+        this.videoList.push(obj);
+      },
+      wsInit(item) {
+        item.videoLoading = true;
+        this.loading = this.$loading({
+          target: '.video-main',
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+        item.ws = new WebSocket(item.assetURL);
+        item.ws.binaryType = 'arraybuffer';
+        item.ws.onopen = () => {
+          item.ws.send(JSON.stringify({method:'open', seq: item.seq}))
+        };
+        item.ws.onerror = function () {
+
+        };
+        item.ws.onmessage = (ev) => {
+          let {data} = ev;
+          if (data instanceof ArrayBuffer) {
+            item.queue.push(data);
+            if (!item.isPlaying) {
+              this.initPlayer(item);
+            } else {
+              if (item.sourceBuffer) {
+                this.feed(item);
+              }
+            }
+          } else {
+            let mes = JSON.parse(ev.data);
+            if (mes.method === 'open') {
+              item.mimeCodec = mes.mime;
+              item.ws.send(JSON.stringify({method:'play', seq: item.seq}))
+            }
+          }
+        };
+        item.ws.onclose = function () {
+          console.log(item.el);
+        };
+      },
+      initPlayer(item) {
+        if ('MediaSource' in window && MediaSource.isTypeSupported(item.mimeCodec)) {
+          item.isPlaying = true;
+          item.mediaSource = new MediaSource();
+          item.video = document.getElementById(`${item.el}`);
+          item.video.src = URL.createObjectURL(item.mediaSource);
+          item.mediaSource.addEventListener('sourceopen', this.sourceOpen.bind(null, item));
+        } else {
+          console.error('Unsupported MIME type or codec: ', item.mimeCodec);
+        }
+      },
+      sourceOpen(item) {
+        // 存在了sourceBuffer 不再重复生成
+        item.sourceBuffer = item.mediaSource.addSourceBuffer(item.mimeCodec);
+        item.sourceBuffer.mode = 'sequence';
+        item.sourceBuffer.addEventListener('updateend', () => {
+          if (!item.isPlaying) {
+            item.video.play();
+          }
+          // 判断如果队列里有数据则继续放入sourceBuffer
+          item.isReady = true;
+        });
+        this.feed(item);
+      },
+      feed(item) {
+        if (item.isReady && item.queue.length) {
+          item.videoLoading = false;
+          this.loading.close();
+          item.isReady = false;
+          if (item.sourceBuffer) {
+            const buffer = item.queue.shift();
+            item.sourceBuffer.appendBuffer(buffer);
+          }
+        }
+      },
+      wsDestroy(item) {
+        item.isPlaying = false;
+        item.ws.send(JSON.stringify({method:'close', seq: item.seq}));
+        item.ws.close();
+        this.wsReset(item);
+      },
+      wsReset(item) {
+        Object.assign(item, {
+          mimeCodec: null,
+          mediaSource: null,
+          sourceBuffer: null,
+          isPlaying: false,
+          isReady: true,
+          queue: [],
+          ws: null,
+          videoLoading: false
+        })
+      },
+      wsRemove(index) {
+        this.videoList.splice(index, 1)
+      }
+    }
+  })
+</script>
+</body>
+</html>
