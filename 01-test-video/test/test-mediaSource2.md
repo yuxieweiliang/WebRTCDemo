@@ -134,11 +134,13 @@
       // 第二个4个字节66747970为ftyp的code码的16进制数；
       // 第三个4字节数6D703432为major_brand字段值，转化成字符串为mp42；
       // 第四个4字节数00000001为版本标示；
-      // 第五，六，七分别描述了一个list数组（69736F6D6D703432 64617368）为compatible_brands转化为字符串为isommp42dash。
+      // 第五，六，七分别描述了一个list数组（69736F6D 6D703432 64617368）为compatible_brands转化为字符串为isommp42dash。
+      
       // moov：继承BOX，包含mvhd,mvex,trak,这里有几点需要注意。mvex必须包含，trak下面的stts，stsc，stco里面的entry_count设置成0.
       // mvex：包含：mehd，trex。
       // trex：继承fullbox，包含字段：
-        // unsigned int(32) version;//0 unsigned int(32) track_ID;//1.视频，2.音频
+        // unsigned int(32) version;//0
+        // unsigned int(32) track_ID;//1.视频，2.音频
         // unsigned int(32) default_sample_description_index;//sample描述索引
         // unsigned int(32) default_sample_duration; //默认sample时长 unsigned
         // int(32) default_sample_size;//默认sample大小 unsigned int(32)

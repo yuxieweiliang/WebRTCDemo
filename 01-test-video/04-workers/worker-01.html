@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>workers</title>
+</head>
+<body>
+<button id="button">按钮</button>
+<script src="./worker.js"></script>
+<script>
+  const runTime = Date.now();
+  console.log(runTime);
+
+  useWorker(function () {
+    var index = 0;
+    for (let i = 0; i < 100000000; i++) {
+      // do something
+      if (i % 6) {
+        index *= 2;
+      }
+      index++;
+    }
+  }).then(res => {
+    console.log(Date.now() - runTime)
+  });
+
+  console.log(Date.now() - runTime);
+
+  document.querySelector('#button').addEventListener('click', () => {
+    console.log('xxxxx');
+    var index = 0;
+    for (let i = 0; i < 100000000; i++) {
+      // do something
+      if (i % 6) {
+        index *= 2;
+      }
+      index++;
+    }
+  })
+</script>
+</body>
+</html>

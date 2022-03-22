@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>worker-04-demo</title>
+</head>
+<body>
+<script>
+  window.URL = window.URL || window.webkitURL;
+
+  const response = `onmessage = ({ data: { data, method } }) => {
+  console.log('Message received from main script');
+  if (data && method === 'format') {
+    postMessage({
+      data: {
+        'res': 'I am a customized result string.',
+      }
+    });
+  }
+  console.log('Posting message back to main script');
+}`;
+  const blob = new Blob([response], {type: 'application/javascript'});
+
+  const worker = new Worker(
+    URL.createObjectURL(blob)
+  );
+
+  // 事件处理
+  worker.onmessage = (e) => {
+    console.log(`Response: ${JSON.stringify(e.data)}`);
+    worker.terminate();
+  };
+  worker.postMessage({
+    method: 'format',
+    data: []
+  });
+</script>
+</body>
+</html>

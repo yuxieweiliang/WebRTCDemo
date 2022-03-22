@@ -105,11 +105,14 @@ function createMediaSource() {
       let cts = 0;
       let dts = ts;
 
+      // 首个缓冲范围的下标是 0。
+      // 用来移除已经缓冲的内容。
       if ($video.buffered.length > 1) {
         mseDecoder.removeBuffer($video.buffered.start(0), $video.buffered.end(0));
         timeInit = false;
       }
 
+      // 如果当前帧 比缓冲区的帧 时间戳 大于 1秒，则跳帧。
       if ($video.drop && dts - cacheTrack?.dts > 1000) {
         $video.drop = false;
         cacheTrack = {};
@@ -142,6 +145,7 @@ function createMediaSource() {
         //   player.handlePlayToRenderTimes()
         // }
       } else {
+        // !!! 不会走到这里 !!!
         // player.debug.log('MediaSource', 'timeInit set false , cacheTrack = {}');
         timeInit = false;
         cacheTrack = {};
@@ -230,6 +234,9 @@ function createMediaSource() {
       }
     },
 
+    /**
+     * 跳帧
+     */
     dropSourceBuffer() {
       if ($video.buffered.length > 0) {
         if ($video.buffered.end(0) - $video.currentTime > 1) {
@@ -238,8 +245,13 @@ function createMediaSource() {
       }
     },
 
+    /**
+     * 移除已经播放过的视频缓冲区
+     *
+     * @param start
+     * @param end
+     */
     removeBuffer(start, end) {
-
       if (sourceBuffer.updating === false) {
         try {
           sourceBuffer.remove(start, end)

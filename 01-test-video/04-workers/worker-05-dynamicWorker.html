@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>worker-04-demo</title>
+</head>
+<body>
+<script src="worker-05-dynamicWorker.js"></script>
+<script>
+  const formatFunc = () => {
+    return {
+      'res': 'I am a customized result string.',
+    }
+  };
+
+  const worker = new DynamicWorker(formatFunc);
+
+  const result = []; // demo 数据
+
+  worker.send({
+    method: 'format',
+    data: result
+  }).then((e) => {
+    console.log(`Response: ${JSON.stringify(e)}`);
+  })
+</script>
+</body>
+</html>

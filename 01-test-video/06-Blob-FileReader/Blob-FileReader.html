@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>blob</title>
+</head>
+<body>
+<script>
+  const debut = { hello: 'word' };
+  const blob = new Blob(
+    [JSON.stringify(debut, null, 2)],
+    { type: 'application/json'}
+  );
+
+  var reader1 = new FileReader();
+  var reader2 = new FileReader();
+  var reader3 = new FileReader();
+  var reader4 = new FileReader();
+
+  function onReader(data) {
+    // reader.result 包含被转化为类型数组 typed array 的 blob
+    console.log(data)
+  }
+
+  reader1.addEventListener("loadend", onReader);
+  reader2.addEventListener("loadend", onReader);
+  reader3.addEventListener("loadend", onReader);
+  reader4.addEventListener("loadend", onReader);
+  /**
+   * reader.abort(): 中止读取操作。
+   * reader.readAsArrayBuffer(): result 属性中保存的将是被读取文件的 ArrayBuffer 数据对象.
+   * reader.readAsBinaryString(): result 属性中将包含所读取文件的原始二进制数据。
+   * reader.readAsDataURL(): result属性中将包含一个data: URL格式的Base64字符串以表示所读取文件的内容。
+   * reader.readAsText(): result属性中将包含一个字符串以表示所读取的文件内容。
+   */
+  reader1.readAsArrayBuffer(blob);
+  reader2.readAsBinaryString(blob);
+  reader3.readAsDataURL(blob);
+  reader4.readAsText(blob);
+
+  async function read() {
+    var text = await (new Response(blob)).text();
+    console.log(text)
+  }
+
+  read()
+</script>
+</body>
+</html>

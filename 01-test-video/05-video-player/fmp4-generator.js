@@ -53,6 +53,7 @@ class MP4 {
 
         let constants = MP4.constants = {};
 
+        // 文件类型。描述遵从的规范的版本。
         constants.FTYP = new Uint8Array([
             0x69, 0x73, 0x6F, 0x6D,  // major_brand: isom
             0x0, 0x0, 0x0, 0x1,   // minor_version: 0x01
@@ -156,7 +157,14 @@ class MP4 {
     // 生成单元段
     // emit ftyp & moov
     static generateInitSegment(meta) {
+        // ftyp：文件类型。描述遵从的规范的版本。
         let ftyp = MP4.box(MP4.types.ftyp, MP4.constants.FTYP);
+        // moov box：媒体的metadata信息。
+        // “moov”是一个container box，具体内容信息在其子box中。一般情况下，“moov”会紧随着“ftyp”。
+        // “moov”中包含1个“mvhd”和若干个“trak”。
+        // 其中“mvhd”是header box，一般作为“moov”的第一个子box出现。
+        // “trak”包含了一个track的相关信息，是一个container box。
+
         let moov = MP4.moov(meta);
 
         let result = new Uint8Array(ftyp.byteLength + moov.byteLength);
@@ -310,14 +318,24 @@ class MP4 {
         return result;
     }
 
+    // “stbl”是mp4文件中最复杂的一个box了，也是解开mp4文件格式的主干。
+    // stbl ：sample table是一个container box。
+    // 其子box包括：
+    //      1. stsd：sample description box，样本的描述信息。
+    //      2. stts：time to sample box，sample解码时间的压缩表。
+    //      3. ctts：composition time to sample box，sample的CTS与DTS的时间差的压缩表。
+    //      4. stss：sync sample box，针对视频，关键帧的序号。
+    //      5. stsz/stz2：sample size box，每个sample的字节大小。
+    //      6. stsc：sample to chunk box，sample-chunk映射表。
+    //      7. stco/co64：chunk offset box，chunk在文件中的偏移。
     // Sample table box
     static stbl(meta) {
         let result = MP4.box(MP4.types.stbl,  // type: stbl
             MP4.stsd(meta),  // Sample Description Table
-            MP4.box(MP4.types.stts, MP4.constants.STTS),  // Time-To-Sample
-            MP4.box(MP4.types.stsc, MP4.constants.STSC),  // Sample-To-Chunk
-            MP4.box(MP4.types.stsz, MP4.constants.STSZ),  // Sample size
-            MP4.box(MP4.types.stco, MP4.constants.STCO)   // Chunk offset
+            MP4.box(MP4.types.stts, MP4.constants.STTS),  // Time-To-Sample // 采样时间
+            MP4.box(MP4.types.stsc, MP4.constants.STSC),  // Sample-To-Chunk 样本区块
+            MP4.box(MP4.types.stsz, MP4.constants.STSZ),  // Sample size 样品大小
+            MP4.box(MP4.types.stco, MP4.constants.STCO)   // Chunk offset 偏移
         );
         return result;
     }
@@ -330,6 +348,7 @@ class MP4 {
                 MP4.box(MP4.types.stsd, MP4.constants.STSD_PREFIX, MP4.hvc1(meta))
     }
 
+    // stsd：sample description box，样本的描述信息。
     // Sample description box
     static stsd(meta) {
         if (meta.type === 'audio') {
@@ -587,7 +606,7 @@ class MP4 {
         return MP4.box(MP4.types.trun, data);
     }
 
-
+    // mdat：具体的媒体数据。
     static mdat(data) {
         return MP4.box(MP4.types.mdat, data)
     }

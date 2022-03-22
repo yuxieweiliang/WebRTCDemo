@@ -54,5 +54,5 @@ function createSocketLoader() {
 
     socket.close();
     socket = null
-  }, 1000)
+  }, 100)
 }

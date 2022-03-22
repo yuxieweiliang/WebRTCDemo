@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>worker</title>
+</head>
+<body>
+<script>
+  const response = "onmessage=function(e){postMessage('Worker: '+e.data);}";
+
+  const worker = new Worker(
+    'data:application/javascript,' + encodeURIComponent(response)
+  );
+
+  worker.onmessage = (e) => {
+    alert('Response: ' + e.data);
+  };
+
+  worker.postMessage('Test');
+</script>
+</body>
+</html>

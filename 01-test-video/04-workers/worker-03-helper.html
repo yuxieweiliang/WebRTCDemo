@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Worker-helper</title>
+</head>
+<body>
+<script>
+  const response = "onmessage=function(e){postMessage('Worker: '+e.data);}";
+
+  const worker = new Worker('Worker-helper.js');
+
+  worker.postMessage(response);
+
+  worker.postMessage('xxxxx');
+
+  worker.onmessage = function () {
+    console.log('xxxxxx');
+
+    worker.terminate();
+  };
+
+</script>
+</body>
+</html>
