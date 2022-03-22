@@ -1,5 +1,4 @@
-class MP4 {
-
+export default class MP4 {
     static init() {
         MP4.types = {
             avc1: [],

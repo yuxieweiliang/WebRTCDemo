@@ -1,18 +1,27 @@
 import EventEmitter from "events";
+import * as utils from './utils'
 
-import Mp4 from './mp4'
-import WebRTCVideo  from "./webrtc/useWebRTC";
 
-export default class VideoPlayer extends EventLister {
+export default class Video extends EventLister {
   constructor(url, root) {
     super();
     const { useWebRTC, ...option } = root.options;
 
-    if (useWebRTC) {
-      this.video = new Mp4()
-    } else {
-      this.video = new WebRTCVideo()
-    }
+    this.initVideo();
 
+  }
+
+  initVideo () {
+    const $video = utils.createElement('video', { autoPlay: true, mute: false });
+
+    utils.listener($video, 'canPlay', () => {
+
+    });
+
+    this.$video = $video;
+  }
+
+  setMediaSourceSrc (mediaSource) {
+    this.$video.src = mediaSource
   }
 }
