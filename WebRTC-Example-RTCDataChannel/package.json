@@ -22,6 +22,6 @@
   "homepage": "https://github.com/zcduthie/WebRTC-Example-RTCDataChannel#readme",
   "dependencies": {
     "ws": "^3.3.2",
-    "express": "^4.16.4"
+    "express": "^4.17.3"
   }
 }
